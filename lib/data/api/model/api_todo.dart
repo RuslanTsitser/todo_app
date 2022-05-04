@@ -2,7 +2,7 @@ import 'package:todo_app/data/api/model/export_model_api.dart';
 import 'package:todo_app/data/api/model/model_api.dart';
 
 class ApiTodo extends ModelApi {
-  final int id;
+  final String id;
   final String title;
   final String status;
   final ApiUser? performer;

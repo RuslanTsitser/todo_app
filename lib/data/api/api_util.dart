@@ -5,14 +5,14 @@ import '../../domain/model/export_model.dart';
 import 'request/export_body.dart';
 
 class ApiUtil {
-  final ApiService apiService;
+  final ApiService _apiService;
 
-  ApiUtil(this.apiService);
+  ApiUtil(this._apiService);
 
   Future<List<User>> getUsers() async {
     try {
       final body = GetUserBody();
-      final result = await apiService.getUsers(body);
+      final result = await _apiService.getUsers(body);
 
       return result
           .map((apiUser) => ModelMapper.userFromJSON(apiUser))

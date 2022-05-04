@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:todo_app/data/api/model/api_todo.dart';
-
 import '../../domain/model/export_model.dart';
 import '../api/model/export_model_api.dart';
 
@@ -30,13 +28,13 @@ class ModelMapper {
 
     late TodoStatus _status;
     switch (apiTodo.status) {
-      case 'waiting':
+      case 'Ожидание':
         _status = TodoStatus.waiting;
         break;
-      case 'inProgress':
+      case 'В работе':
         _status = TodoStatus.inProgress;
         break;
-      case 'completed':
+      case 'Выполнено':
         _status = TodoStatus.completed;
         break;
       default:
@@ -54,11 +52,14 @@ class ModelMapper {
   }
 
   static Map<String, dynamic> todoToMap(Todo todo) {
-    return {
+    Map<String, dynamic> map = {
       'id': todo.id,
       'title': todo.title,
       'status': todo.status.name,
-      'performer': todo.performer,
     };
+    if (todo.performer != null) {
+      map['performer'] = userToMap(todo.performer!);
+    }
+    return map;
   }
 }
