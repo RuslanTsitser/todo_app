@@ -124,6 +124,9 @@ class _TodoListPageState extends State<TodoListPage> {
         onTap: () {
           _changeStatus(todo);
         },
+        onLongPress: () {
+          _changeTitle(todo);
+        },
         leading: const Icon(
           Icons.double_arrow_outlined,
           size: 40,
@@ -137,6 +140,35 @@ class _TodoListPageState extends State<TodoListPage> {
           ],
         ),
       ),
+    );
+  }
+
+  void _changeTitle(Todo todo) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final _controller = TextEditingController();
+        return AlertDialog(
+          title: const Text('Изменить название'),
+          content: TextField(
+            controller: _controller,
+          ),
+          actions: <Widget>[
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Закрыть')),
+            TextButton(
+              onPressed: () {
+                _todoBloc.add(TodoChangeTitle(todo.id, _controller.text));
+                Navigator.pop(context);
+              },
+              child: const Text('Добавить'),
+            )
+          ],
+        );
+      },
     );
   }
 

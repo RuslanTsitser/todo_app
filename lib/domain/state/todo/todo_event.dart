@@ -72,3 +72,11 @@ class TodoSearch extends TodoEvent {
   @override
   List<Object?> get props => [value];
 }
+
+class TodoChangeTitle extends TodoEvent {
+  final String id;
+  final String value;
+  TodoChangeTitle(this.id, this.value);
+  @override
+  List<Object?> get props => [id, value];
+}

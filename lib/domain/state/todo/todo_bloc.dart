@@ -126,22 +126,37 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       }
     });
 
-    on<TodoSearch>((event, emit) async {
-      try {
-        final todoList = await _authRepository.getTodoList();
-        final filteredList = todoList.where(
-          (element) {
-            if (element.title.contains(event.value)) {
-              return true;
-            } else {
-              return false;
-            }
-          },
-        ).toList();
-        emit(TodoSuccess(filteredList));
-      } catch (e) {
-        emit(TodoFailure(e.toString()));
-      }
-    });
+    on<TodoSearch>(
+      (event, emit) async {
+        try {
+          final todoList = await _authRepository.getTodoList();
+          final filteredList = todoList.where(
+            (element) {
+              if (element.title.contains(event.value)) {
+                return true;
+              } else {
+                return false;
+              }
+            },
+          ).toList();
+          emit(TodoSuccess(filteredList));
+        } catch (e) {
+          emit(TodoFailure(e.toString()));
+        }
+      },
+    );
+    on<TodoChangeTitle>(
+      (event, emit) async {
+        try {
+          final todoList = await _authRepository.updateTodo(
+            id: event.id,
+            newTitle: event.value,
+          );
+          emit(TodoSuccess(todoList));
+        } catch (e) {
+          emit(TodoFailure(e.toString()));
+        }
+      },
+    );
   }
 }
