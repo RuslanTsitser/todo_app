@@ -1,23 +1,31 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 
 import 'export_model.dart';
 
 enum TodoStatus { waiting, inProgress, completed }
 
 extension TodoStatusExtension on TodoStatus {
-  String get name => describeEnum(this);
+  String get name {
+    switch (this) {
+      case TodoStatus.completed:
+        return 'Выполнено';
+      case TodoStatus.inProgress:
+        return 'В работе';
+      case TodoStatus.waiting:
+        return 'Ожидание';
+    }
+  }
 }
 
 // ignore: must_be_immutable
 class Todo extends Equatable {
-  final int id;
+  final String id;
   final String title;
   TodoStatus _status = TodoStatus.waiting;
   User? _performer;
 
   Todo({
-    this.id = 0,
+    this.id = '',
     this.title = '',
   });
 
@@ -28,7 +36,7 @@ class Todo extends Equatable {
     _status = newStatus;
   }
 
-  void updatePerformer(User performer) {
+  void updatePerformer(User? performer) {
     _performer = performer;
   }
 
