@@ -3,23 +3,26 @@ import '../model/export_model.dart';
 abstract class AuthRepository {
   Future<bool> login(String username, String password);
 
+  Future<bool> loginWithToken();
+
   Future<void> logout();
 
   Future<List<User>> getUsers();
 
-  Future<void> createTask(int id, String title);
+  Future<List<Todo>> getTodoList();
 
-  Future<Todo> readTask(int id);
+  Future<void> clearTodoList();
 
-  Future<void> updateTask({
-    required int id,
-    String? title,
-    required TodoStatus newStatus,
+  Future<List<Todo>> createTodo(String id, String title);
+
+  Future<Todo> readTodo(String id);
+
+  Future<List<Todo>> updateTodo({
+    required String id,
+    String? newTitle,
+    TodoStatus? newStatus,
+    User? newPerformer,
   });
 
-  Future<void> deleteTask(int id);
-
-  Future<void> setPerformer(User performer);
-
-  Future<void> removePerformer();
+  Future<List<Todo>> deleteTodo(String id);
 }
