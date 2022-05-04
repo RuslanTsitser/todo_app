@@ -27,6 +27,7 @@ class _SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
+      automaticallyImplyLeading: false,
       actions: [
         if (!_searchStarted)
           IconButton(
@@ -68,6 +69,7 @@ class _SearchBarState extends State<SearchBar> {
 
   Widget _textField() {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),

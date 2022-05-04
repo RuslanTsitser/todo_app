@@ -27,11 +27,11 @@ class _SplashScreenState extends State<SplashScreen> {
       listener: (context, state) {
         if (state is AuthUnauthenticated) {
           Navigator.pushNamedAndRemoveUntil(
-              context, '/login-page', (route) => false);
+              context, '/login-page', (route) => true);
         }
         if (state is AuthSuccess) {
           Navigator.pushNamedAndRemoveUntil(
-              context, '/todo-list-page', (route) => false);
+              context, '/todo-list-page', (route) => true);
         }
         if (state is AuthFailure) {
           ScaffoldMessenger.of(context)
