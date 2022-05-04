@@ -4,15 +4,18 @@ import '../../domain/model/export_model.dart';
 import '../api/model/export_model_api.dart';
 
 class ModelMapper {
+  // Общая команда для преобразования в json
   static String toJson(Map<String, dynamic> map) {
     final String json = const JsonEncoder().convert(map).toString();
     return json;
   }
 
+  // получение user из json
   static User userFromJSON(ApiUser apiUser) {
     return User(id: apiUser.id, name: apiUser.name);
   }
 
+  // преобразование user в Map
   static Map<String, dynamic> userToMap(User user) {
     return {
       'id': user.id,

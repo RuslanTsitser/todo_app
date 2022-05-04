@@ -1,6 +1,7 @@
 import 'package:todo_app/data/api/model/export_model_api.dart';
 import 'package:todo_app/data/api/model/model_api.dart';
 
+// Todo, подгружаемые с сети или кэша
 class ApiTodo extends ModelApi {
   final String id;
   final String title;

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+// Основной класс user
 class User extends Equatable {
   final int id;
   final String name;

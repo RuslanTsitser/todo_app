@@ -1,10 +1,16 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Данные сохранять будем как текст
 abstract class SharedService {
+  // получить данные с кэша как список данных
   Future<List<String>> getListData(String key);
+  // получить данные из кэша как отельную сущность
   Future<String> getData(String key);
+  // сохранить в кэше список данных
   Future<void> setListData(String key, List<String> data);
+  // сохранить объект
   Future<void> setData(String key, String data);
+  // удалить объект
   Future<void> removeData(String key);
 }
 

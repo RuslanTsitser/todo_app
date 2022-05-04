@@ -1,18 +1,25 @@
 import '../model/export_model.dart';
 
 abstract class AuthRepository {
+  // Залогиниться с логином и паролем
   Future<bool> login(String username, String password);
 
+  // Залогиниться с токеном
   Future<bool> loginWithToken();
 
+  // Покинуть учетную запись
   Future<void> logout();
 
+  // Получить список подчиненных
   Future<List<User>> getUsers();
 
+  // Получить список созданных todo
   Future<List<Todo>> getTodoList();
 
+  // очистить список todo
   Future<void> clearTodoList();
 
+  // CRUD
   Future<List<Todo>> createTodo(String id, String title);
 
   Future<Todo> readTodo(String id);

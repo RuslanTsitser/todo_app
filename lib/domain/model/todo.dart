@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 import 'export_model.dart';
 
+// Основной класс для Todo
 enum TodoStatus { waiting, inProgress, completed }
 
 extension TodoStatusExtension on TodoStatus {

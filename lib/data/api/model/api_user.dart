@@ -1,5 +1,6 @@
 import 'package:todo_app/data/api/model/model_api.dart';
 
+// user, погружаемый с сети
 class ApiUser extends ModelApi {
   final int id;
   final String name;
