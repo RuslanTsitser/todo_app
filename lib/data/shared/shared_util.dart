@@ -1,62 +1,128 @@
+import 'dart:convert';
+
 import '../../domain/model/export_model.dart';
 import '../api/model/export_model_api.dart';
 import '../mapper/model_mapper.dart';
 import 'service/shared_service.dart';
 
 class SharedUtil {
-  final _sharedService = SharedServiceImp();
+  final SharedService _sharedService;
 
-  Future<void> setTask(int id, String title) async {
-    final key = 'Todo $id';
-    final task = Todo(
+  SharedUtil(this._sharedService);
+
+  Future<String> getToken() async {
+    const _key = 'token';
+
+    var token = await _sharedService.getData(_key);
+    return token;
+  }
+
+  Future<void> setToken(String token) async {
+    const _key = 'token';
+
+    await _sharedService.setData(_key, token);
+  }
+
+  Future<void> deleteToken() async {
+    const _key = 'token';
+
+    await _sharedService.removeData(_key);
+  }
+
+  Future<void> setTodoList(List<Todo> todoList) async {
+    var token = await getToken();
+    final _key = '$token todo list';
+
+    final todoListJSON = todoList.map((todo) {
+      final todoMap = ModelMapper.todoToMap(todo);
+      final todoJSON = ModelMapper.toJson(todoMap);
+      return todoJSON;
+    }).toList();
+
+    await _sharedService.setListData(_key, todoListJSON);
+  }
+
+  Future<List<Todo>> getTodoList() async {
+    var token = await getToken();
+    final _key = '$token todo list';
+
+    final todoListJSON = await _sharedService.getListData(_key);
+    final todoList = todoListJSON.map((todoJSON) {
+      final Map<String, dynamic> json = const JsonDecoder().convert(todoJSON);
+      final apiTodo = ApiTodo.fromJson(json);
+      final task = ModelMapper.todoFromJSON(apiTodo);
+      return task;
+    }).toList();
+
+    return todoList;
+  }
+
+  Future<void> clearTodoList() async {
+    var token = await getToken();
+    final _key = '$token todo list';
+    await _sharedService.removeData(_key);
+  }
+
+  Future<List<Todo>> addTodo({
+    required String id,
+    required String title,
+  }) async {
+    final todoList = await getTodoList();
+
+    final newTodo = Todo(
       id: id,
       title: title,
     );
-    final taskMap = ModelMapper.todoToMap(task);
-    final taskJSON = ModelMapper.toJson(taskMap);
-
-    await _sharedService.setData(key, taskJSON);
+    todoList.add(newTodo);
+    await clearTodoList();
+    await setTodoList(todoList);
+    return todoList;
   }
 
-  Future<Todo> getTask(int id) async {
-    final key = 'Todo $id';
-    final todoJSON = await _sharedService.getData(key);
-    final apiTodo = ApiTodo.fromJson(todoJSON);
-    final task = ModelMapper.todoFromJSON(apiTodo);
-    return task;
+  Future<Todo> getTodo(String id) async {
+    final todoList = await getTodoList();
+
+    final targetTodo = todoList.firstWhere((todo) => todo.id == id);
+    return targetTodo;
   }
 
-  Future<void> updateTask({
-    required int id,
+  Future<List<Todo>> removeTodo(String id) async {
+    final todoList = await getTodoList();
+    todoList.removeWhere((element) => element.id == id);
+    await clearTodoList();
+    await setTodoList(todoList);
+    return todoList;
+  }
+
+  Future<List<Todo>> updateTodo({
+    required String id,
     String? title,
     TodoStatus? status,
     User? performer,
   }) async {
-    final task = await getTask(id);
-    final key = 'Todo $id';
+    final todoList = await getTodoList();
 
-    if (status != null) task.updateStatus(status);
-    if (performer != null) task.updatePerformer(performer);
+    final targetTodo = todoList.firstWhere((todo) {
+      return todo.id == id;
+    });
+    final index = todoList.indexWhere((todo) {
+      return todo.id == id;
+    });
 
-    if (title != null) {
-      final editedTask = Todo(
-        id: task.id,
-        title: title,
-      );
-      editedTask.updateStatus(task.status);
-      if (task.performer != null) editedTask.updatePerformer(task.performer!);
-      final editedTaskMap = ModelMapper.todoToMap(editedTask);
-      final editedTaskJSON = ModelMapper.toJson(editedTaskMap);
-      await _sharedService.updateData(key, editedTaskJSON);
-    } else {
-      final taskMap = ModelMapper.todoToMap(task);
-      final taskJSON = ModelMapper.toJson(taskMap);
-      await _sharedService.updateData(key, taskJSON);
-    }
-  }
+    final newTodo = Todo(
+      id: targetTodo.id,
+      title: title ?? targetTodo.title,
+    );
 
-  Future<void> removeTask(int id) async {
-    final key = 'Todo $id';
-    await _sharedService.removeData(key);
+    newTodo.updateStatus(status ?? targetTodo.status);
+    newTodo.updatePerformer(performer ?? targetTodo.performer);
+
+    todoList.removeWhere((element) => element.id == id);
+    todoList.insert(index, newTodo);
+
+    await clearTodoList();
+    await setTodoList(todoList);
+
+    return todoList;
   }
 }
