@@ -12,11 +12,15 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final _usernameController = TextEditingController();
     final _passwordController = TextEditingController();
+    final _passwordFocus = FocusNode();
 
     Widget _usernameField() {
       return ConstrainedBox(
         constraints: BoxConstraints.loose(const Size(500, 150)),
         child: TextFormField(
+          onFieldSubmitted: (value) {
+            _passwordFocus.requestFocus();
+          },
           keyboardType: TextInputType.emailAddress,
           style: const TextStyle(color: Colors.black),
           controller: _usernameController,
@@ -30,6 +34,7 @@ class LoginPage extends StatelessWidget {
       return ConstrainedBox(
         constraints: BoxConstraints.loose(const Size(500, 150)),
         child: TextFormField(
+          focusNode: _passwordFocus,
           onFieldSubmitted: (value) {
             context.read<AuthBloc>().add(
                   LoginWithUsername(
