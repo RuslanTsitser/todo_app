@@ -14,61 +14,72 @@ class LoginPage extends StatelessWidget {
     final _passwordController = TextEditingController();
 
     Widget _usernameField() {
-      return TextFormField(
-        keyboardType: TextInputType.emailAddress,
-        style: const TextStyle(color: Colors.black),
-        controller: _usernameController,
-        decoration:
-            textFieldDecoration('Введите username', _usernameController),
+      return ConstrainedBox(
+        constraints: BoxConstraints.loose(const Size(500, 150)),
+        child: TextFormField(
+          keyboardType: TextInputType.emailAddress,
+          style: const TextStyle(color: Colors.black),
+          controller: _usernameController,
+          decoration:
+              textFieldDecoration('Введите username', _usernameController),
+        ),
       );
     }
 
     Widget _passwordField() {
-      return TextFormField(
-        obscureText: true,
-        keyboardType: TextInputType.emailAddress,
-        style: const TextStyle(color: Colors.black),
-        controller: _passwordController,
-        decoration:
-            textFieldDecoration('Введите password', _passwordController),
+      return ConstrainedBox(
+        constraints: BoxConstraints.loose(const Size(500, 150)),
+        child: TextFormField(
+          obscureText: true,
+          keyboardType: TextInputType.emailAddress,
+          style: const TextStyle(color: Colors.black),
+          controller: _passwordController,
+          decoration:
+              textFieldDecoration('Введите password', _passwordController),
+        ),
       );
     }
 
     Widget _loginButton() {
-      return ElevatedButton(
-        style: elevatedButtonStyle(context),
-        onPressed: () {
-          context.read<AuthBloc>().add(
-                LoginWithUsername(
-                  _usernameController.text,
-                  _passwordController.text,
-                ),
-              );
-        },
-        child: Text(
-          'Войти',
-          style: Theme.of(context).textTheme.headline5,
+      return ConstrainedBox(
+        constraints: BoxConstraints.loose(const Size(500, 150)),
+        child: ElevatedButton(
+          style: elevatedButtonStyle(context),
+          onPressed: () {
+            context.read<AuthBloc>().add(
+                  LoginWithUsername(
+                    _usernameController.text,
+                    _passwordController.text,
+                  ),
+                );
+          },
+          child: Text(
+            'Войти',
+            style: Theme.of(context).textTheme.headline5,
+          ),
         ),
       );
     }
 
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(
-              Icons.flutter_dash,
-              size: 150,
-            ),
-            const SizedBox(height: 16),
-            _usernameField(),
-            const SizedBox(height: 16),
-            _passwordField(),
-            const SizedBox(height: 16),
-            _loginButton(),
-          ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.flutter_dash,
+                size: 150,
+              ),
+              const SizedBox(height: 16),
+              _usernameField(),
+              const SizedBox(height: 16),
+              _passwordField(),
+              const SizedBox(height: 16),
+              _loginButton(),
+            ],
+          ),
         ),
       ),
     );
