@@ -30,6 +30,14 @@ class LoginPage extends StatelessWidget {
       return ConstrainedBox(
         constraints: BoxConstraints.loose(const Size(500, 150)),
         child: TextFormField(
+          onFieldSubmitted: (value) {
+            context.read<AuthBloc>().add(
+                  LoginWithUsername(
+                    _usernameController.text,
+                    _passwordController.text,
+                  ),
+                );
+          },
           obscureText: true,
           keyboardType: TextInputType.emailAddress,
           style: const TextStyle(color: Colors.black),
@@ -62,23 +70,25 @@ class LoginPage extends StatelessWidget {
     }
 
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.flutter_dash,
-                size: 150,
-              ),
-              const SizedBox(height: 16),
-              _usernameField(),
-              const SizedBox(height: 16),
-              _passwordField(),
-              const SizedBox(height: 16),
-              _loginButton(),
-            ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.flutter_dash,
+                  size: 150,
+                ),
+                const SizedBox(height: 16),
+                _usernameField(),
+                const SizedBox(height: 16),
+                _passwordField(),
+                const SizedBox(height: 16),
+                _loginButton(),
+              ],
+            ),
           ),
         ),
       ),
