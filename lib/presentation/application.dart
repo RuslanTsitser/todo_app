@@ -7,6 +7,7 @@ import '../domain/state/auth/auth_bloc.dart';
 import '../domain/state/todo/todo_bloc.dart';
 import '../domain/state/users/users_bloc.dart';
 import 'pages/login_page.dart';
+import 'properties/app_theme.dart';
 
 class Application extends StatelessWidget {
   const Application({Key? key}) : super(key: key);
@@ -26,6 +27,9 @@ class Application extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        themeMode: ThemeMode.system,
+        darkTheme: AppTheme.dark,
+        theme: AppTheme.light,
         initialRoute: '/',
         routes: {
           '/': (context) => const SplashScreen(),

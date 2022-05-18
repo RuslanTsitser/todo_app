@@ -75,8 +75,8 @@ class LoginPage extends StatelessWidget {
     }
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
+      body: Center(
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(8),
             child: Column(

@@ -116,11 +116,11 @@ class _TodoListPageState extends State<TodoListPage> {
         ],
       ),
       child: ListTile(
-        tileColor: todo.status == TodoStatus.completed
-            ? Colors.lightGreen
-            : todo.status == TodoStatus.inProgress
-                ? Colors.yellowAccent
-                : Colors.transparent,
+        // tileColor: todo.status == TodoStatus.completed
+        //     ? Colors.lightGreen
+        //     : todo.status == TodoStatus.inProgress
+        //         ? Colors.yellowAccent
+        //         : Colors.transparent,
         onTap: () {
           _changeStatus(todo);
         },

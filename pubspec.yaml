@@ -12,11 +12,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   dio: ^4.0.6
   equatable: ^2.0.3
+  flex_color_scheme: ^5.0.1
   flutter:
     sdk: flutter
   flutter_bloc: ^8.0.1
   flutter_slidable: ^1.2.0
   get_it: ^7.2.0
+  google_fonts: ^2.3.2
   shared_preferences: ^2.0.13
   uuid: ^3.0.6
 
