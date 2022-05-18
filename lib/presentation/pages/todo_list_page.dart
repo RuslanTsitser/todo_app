@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:todo_app/domain/state/users/users_bloc.dart';
 import 'package:todo_app/presentation/widgets/search_bar.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../domain/model/export_model.dart';
-import '../../domain/state/todo/todo_bloc.dart';
+import '../../domain/state/todo/bloc/todo_bloc.dart';
+import '../../domain/state/users/bloc/users_bloc.dart';
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({Key? key}) : super(key: key);

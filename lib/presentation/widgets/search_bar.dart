@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/domain/model/export_model.dart';
-import 'package:todo_app/domain/state/todo/todo_bloc.dart';
 
-import '../../domain/state/auth/auth_bloc.dart';
+import '../../domain/state/auth/bloc/auth_bloc.dart';
+import '../../domain/state/todo/bloc/todo_bloc.dart';
 
 class SearchBar extends StatefulWidget {
   const SearchBar({Key? key}) : super(key: key);

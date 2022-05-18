@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../domain/state/auth/auth_bloc.dart';
+import '../../domain/state/auth/bloc/auth_bloc.dart';
 import '../properties/elevated_button_style.dart';
 import '../properties/text_field_decoration.dart';
 

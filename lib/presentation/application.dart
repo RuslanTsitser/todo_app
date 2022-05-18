@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/presentation/pages/splash_screen.dart';
 import 'package:todo_app/presentation/pages/todo_list_page.dart';
 
-import '../domain/state/auth/auth_bloc.dart';
-import '../domain/state/todo/todo_bloc.dart';
-import '../domain/state/users/users_bloc.dart';
+import '../domain/state/auth/bloc/auth_bloc.dart';
+import '../domain/state/todo/bloc/todo_bloc.dart';
+import '../domain/state/users/bloc/users_bloc.dart';
 import 'pages/login_page.dart';
 import 'properties/app_theme.dart';
 

@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../internal/repository_module.dart';
-import '../../model/export_model.dart';
-import '../../repository/auth_repository.dart';
+import '../../../../internal/repository_module.dart';
+import '../../../model/export_model.dart';
+import '../../../repository/auth_repository.dart';
 
 part 'users_event.dart';
 part 'users_state.dart';

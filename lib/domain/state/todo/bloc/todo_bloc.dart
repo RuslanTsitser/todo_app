@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../internal/repository_module.dart';
-import '../../model/export_model.dart';
-import '../../repository/auth_repository.dart';
+import '../../../../internal/repository_module.dart';
+import '../../../model/export_model.dart';
+import '../../../repository/auth_repository.dart';
 
 part 'todo_event.dart';
 part 'todo_state.dart';
@@ -116,6 +116,7 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
         emit(TodoFailure(e.toString()));
       }
     });
+
     on<TodoFilterReset>((event, emit) async {
       try {
         final todoList = await _authRepository.getTodoList();
