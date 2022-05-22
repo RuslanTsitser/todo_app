@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:todo_app/internal/providers/providers.dart';
+import 'package:todo_app/main.dart';
 import 'package:todo_app/presentation/widgets/search_bar.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../domain/model/export_model.dart';
 import '../../domain/state/todo/bloc/todo_bloc.dart';
 import '../../domain/state/users/bloc/users_bloc.dart';
+import '../../domain/state/freezed_states.dart' as f;
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({Key? key}) : super(key: key);
@@ -18,11 +22,14 @@ class TodoListPage extends StatefulWidget {
 class _TodoListPageState extends State<TodoListPage> {
   late TodoBloc _todoBloc;
   late UsersBloc _usersBloc;
+  late WidgetRef _ref;
   @override
   void initState() {
-    _todoBloc = BlocProvider.of<TodoBloc>(context);
-    _todoBloc.add(TodoGetList());
-    _usersBloc = BlocProvider.of<UsersBloc>(context);
+    if (!kTryRiverpod) {
+      _todoBloc = BlocProvider.of<TodoBloc>(context);
+      _todoBloc.add(TodoGetList());
+      _usersBloc = BlocProvider.of<UsersBloc>(context);
+    }
     super.initState();
   }
 
@@ -37,44 +44,55 @@ class _TodoListPageState extends State<TodoListPage> {
       ),
       body: CustomScrollView(
         slivers: [
-          const SearchBar(),
-          BlocBuilder<TodoBloc, TodoState>(
-            bloc: _todoBloc,
-            builder: (context, state) {
-              if (state is TodoSuccess) {
-                return SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      return _todoTile(state.todoList[index]);
-                    },
-                    childCount: state.todoList.length,
-                  ),
-                );
-              }
-              if (state is TodoEmptyList) {
-                return SliverPadding(
-                  padding: const EdgeInsets.all(8),
-                  sliver: SliverList(
-                    delegate: SliverChildListDelegate(
-                      const [
-                        Center(
-                          child: Text(
-                            'Список задач пуст',
-                            style: TextStyle(fontSize: 30),
+          // const SearchBar(),
+          !kTryRiverpod
+              ? BlocBuilder<TodoBloc, TodoState>(
+                  bloc: _todoBloc,
+                  builder: (context, state) {
+                    if (state is TodoSuccess) {
+                      return SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            return _todoTile(state.todoList[index]);
+                          },
+                          childCount: state.todoList.length,
+                        ),
+                      );
+                    }
+                    if (state is TodoEmptyList) {
+                      return SliverPadding(
+                        padding: const EdgeInsets.all(8),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate(
+                            const [
+                              Center(
+                                child: Text(
+                                  'Список задач пуст',
+                                  style: TextStyle(fontSize: 30),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-              return SliverList(
-                delegate: SliverChildListDelegate([
-                  const Center(child: CircularProgressIndicator()),
-                ]),
-              );
-            },
-          ),
+                      );
+                    }
+                    return SliverList(
+                      delegate: SliverChildListDelegate([
+                        const Center(child: CircularProgressIndicator()),
+                      ]),
+                    );
+                  },
+                )
+              : Consumer(
+                  builder: (context, ref, child) {
+                    _ref = ref;
+                    return SliverList(
+                      delegate: SliverChildListDelegate([
+                        const Center(child: CircularProgressIndicator()),
+                      ]),
+                    );
+                  },
+                ),
         ],
       ),
     );
@@ -103,9 +121,17 @@ class _TodoListPageState extends State<TodoListPage> {
         children: [
           SlidableAction(
             onPressed: (context) {
-              if (_usersBloc.state is UsersSuccess) {
-                var _state = _usersBloc.state as UsersSuccess;
-                _delegateTask(_state.users, todo);
+              if (!kTryRiverpod) {
+                if (_usersBloc.state is UsersSuccess) {
+                  var _state = _usersBloc.state as UsersSuccess;
+                  _delegateTask(_state.users, todo);
+                }
+              } else {
+                _ref.watch(usersNotifierProvider).whenOrNull(
+                  success: (users) {
+                    _delegateTask(users, todo);
+                  },
+                );
               }
             },
             backgroundColor: const Color(0xFF21B7CA),
@@ -161,7 +187,11 @@ class _TodoListPageState extends State<TodoListPage> {
                 child: const Text('Закрыть')),
             TextButton(
               onPressed: () {
-                _todoBloc.add(TodoChangeTitle(todo.id, _controller.text));
+                !kTryRiverpod
+                    ? _todoBloc.add(TodoChangeTitle(todo.id, _controller.text))
+                    : _ref
+                        .read(todoNotifierProvider.notifier)
+                        .changeTitle(todo.id, _controller.text);
                 Navigator.pop(context);
               },
               child: const Text('Добавить'),
@@ -198,9 +228,13 @@ class _TodoListPageState extends State<TodoListPage> {
                     itemBuilder: (context, index) {
                       return ListTile(
                         onTap: () {
-                          _todoBloc.add(
-                            TodoSetPerformer(todo.id, users[index]),
-                          );
+                          !kTryRiverpod
+                              ? _todoBloc.add(
+                                  TodoSetPerformer(todo.id, users[index]),
+                                )
+                              : _ref
+                                  .read(todoNotifierProvider.notifier)
+                                  .setPerformer(todo.id, users[index]);
                           Navigator.pop(context);
                         },
                         leading: Text(index.toString()),
@@ -227,36 +261,51 @@ class _TodoListPageState extends State<TodoListPage> {
             children: [
               TextButton(
                 onPressed: () {
-                  _todoBloc.add(
-                    TodoUpdateStatus(
-                      todo.id,
-                      TodoStatus.waiting,
-                    ),
-                  );
+                  !kTryRiverpod
+                      ? _todoBloc.add(
+                          TodoUpdateStatus(
+                            todo.id,
+                            TodoStatus.waiting,
+                          ),
+                        )
+                      : _ref.read(todoNotifierProvider.notifier).updateStatus(
+                            todo.id,
+                            TodoStatus.waiting,
+                          );
                   Navigator.pop(context);
                 },
                 child: const Text('Ожидание'),
               ),
               TextButton(
                 onPressed: () {
-                  _todoBloc.add(
-                    TodoUpdateStatus(
-                      todo.id,
-                      TodoStatus.inProgress,
-                    ),
-                  );
+                  !kTryRiverpod
+                      ? _todoBloc.add(
+                          TodoUpdateStatus(
+                            todo.id,
+                            TodoStatus.inProgress,
+                          ),
+                        )
+                      : _ref.read(todoNotifierProvider.notifier).updateStatus(
+                            todo.id,
+                            TodoStatus.inProgress,
+                          );
                   Navigator.pop(context);
                 },
                 child: const Text('В работе'),
               ),
               TextButton(
                 onPressed: () {
-                  _todoBloc.add(
-                    TodoUpdateStatus(
-                      todo.id,
-                      TodoStatus.completed,
-                    ),
-                  );
+                  !kTryRiverpod
+                      ? _todoBloc.add(
+                          TodoUpdateStatus(
+                            todo.id,
+                            TodoStatus.completed,
+                          ),
+                        )
+                      : _ref.read(todoNotifierProvider.notifier).updateStatus(
+                            todo.id,
+                            TodoStatus.completed,
+                          );
                   Navigator.pop(context);
                 },
                 child: const Text('Выполнено'),
@@ -285,7 +334,11 @@ class _TodoListPageState extends State<TodoListPage> {
             TextButton(
               onPressed: () {
                 var id = const Uuid().v1();
-                _todoBloc.add(TodoAdd(id, _controller.text));
+                !kTryRiverpod
+                    ? _todoBloc.add(TodoAdd(id, _controller.text))
+                    : _ref
+                        .read(todoNotifierProvider.notifier)
+                        .addTodo(id, _controller.text);
                 Navigator.pop(context);
               },
               child: const Text('Добавить'),

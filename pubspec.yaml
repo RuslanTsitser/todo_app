@@ -9,6 +9,7 @@ environment:
   sdk: ">=2.16.2 <3.0.0"
 
 dependencies:
+  auto_route: ^4.0.1
   cupertino_icons: ^1.0.2
   dio: ^4.0.6
   equatable: ^2.0.3
@@ -16,16 +17,18 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.0.1
-  flutter_slidable: ^1.2.0
+  flutter_slidable: ^1.2.1
   freezed_annotation: ^2.0.3
   get_it: ^7.2.0
   google_fonts: ^2.3.2
+  hooks_riverpod: ^1.0.3
   json_annotation: ^4.5.0
   riverpod: ^1.0.3
   shared_preferences: ^2.0.13
   uuid: ^3.0.6
 
 dev_dependencies:
+  auto_route_generator: ^4.0.0
   build_runner: ^2.1.11
   flutter_lints: ^1.0.0
   flutter_test:
