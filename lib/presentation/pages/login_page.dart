@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:todo_app/domain/state/auth/riverpod/auth_notifier.dart';
 import 'package:todo_app/internal/providers/providers.dart';
 import 'package:todo_app/main.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -41,7 +40,6 @@ class LoginPage extends StatelessWidget {
           child: TextFormField(
             focusNode: _passwordFocus,
             onFieldSubmitted: (value) {
-              print('asdf');
               onSubmit();
             },
             obscureText: true,
@@ -58,7 +56,6 @@ class LoginPage extends StatelessWidget {
           ? Consumer(builder: (context, ref, child) {
               return _passwordFieldUI(
                 () {
-                  print('sdaf');
                   ref.read(authNotifierProvider.notifier).loginWithUsername(
                         _usernameController.text,
                         _passwordController.text,

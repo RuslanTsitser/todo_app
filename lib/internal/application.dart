@@ -76,6 +76,9 @@ class ApplicationRiverpod extends ConsumerWidget {
     ref.listen<f.AuthState>(authNotifierProvider, (previous, next) {
       final appRouter = ref.watch(appRouterProvider);
       if (next == const f.AuthState.authenticated()) {
+        ref
+          ..watch(todoNotifierProvider.notifier).getList()
+          ..watch(usersNotifierProvider.notifier).getAllUsers();
         appRouter.pushAndPopUntil(
           const TodoListRoute(),
           predicate: (route) => false,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:todo_app/domain/state/auth/bloc/auth_bloc.dart';
 import 'package:todo_app/internal/providers/providers.dart';
 import 'package:todo_app/main.dart';
 import 'package:todo_app/presentation/widgets/search_bar.dart';
@@ -10,7 +11,6 @@ import 'package:uuid/uuid.dart';
 import '../../domain/model/export_model.dart';
 import '../../domain/state/todo/bloc/todo_bloc.dart';
 import '../../domain/state/users/bloc/users_bloc.dart';
-import '../../domain/state/freezed_states.dart' as f;
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({Key? key}) : super(key: key);
@@ -22,6 +22,7 @@ class TodoListPage extends StatefulWidget {
 class _TodoListPageState extends State<TodoListPage> {
   late TodoBloc _todoBloc;
   late UsersBloc _usersBloc;
+  late AuthBloc _authBloc;
   late WidgetRef _ref;
   @override
   void initState() {
@@ -29,6 +30,7 @@ class _TodoListPageState extends State<TodoListPage> {
       _todoBloc = BlocProvider.of<TodoBloc>(context);
       _todoBloc.add(TodoGetList());
       _usersBloc = BlocProvider.of<UsersBloc>(context);
+      _authBloc = BlocProvider.of<AuthBloc>(context);
     }
     super.initState();
   }
@@ -44,7 +46,77 @@ class _TodoListPageState extends State<TodoListPage> {
       ),
       body: CustomScrollView(
         slivers: [
-          // const SearchBar(),
+          !kTryRiverpod
+              ? SearchBar(
+                  filterCallBacks: [
+                    {
+                      'Только выполненные': () {
+                        _todoBloc.add(TodoFilter(TodoStatus.completed));
+                      }
+                    },
+                    {
+                      'Только в работе': () {
+                        _todoBloc.add(TodoFilter(TodoStatus.inProgress));
+                      }
+                    },
+                    {
+                      'Только в ожидании': () {
+                        _todoBloc.add(TodoFilter(TodoStatus.waiting));
+                      }
+                    },
+                    {
+                      'Сбросить фильтры': () {
+                        _todoBloc.add(TodoFilterReset());
+                      }
+                    },
+                  ],
+                  onLogout: () {
+                    _authBloc.add(Logout());
+                  },
+                  onSearched: (value) {
+                    _todoBloc.add(TodoSearch(value));
+                  },
+                )
+              : Consumer(
+                  builder: (context, ref, child) => SearchBar(
+                    filterCallBacks: [
+                      {
+                        'Только выполненные': () {
+                          _ref
+                              .read(todoNotifierProvider.notifier)
+                              .filter(TodoStatus.completed);
+                        }
+                      },
+                      {
+                        'Только в работе': () {
+                          _ref
+                              .read(todoNotifierProvider.notifier)
+                              .filter(TodoStatus.inProgress);
+                        }
+                      },
+                      {
+                        'Только в ожидании': () {
+                          _ref
+                              .read(todoNotifierProvider.notifier)
+                              .filter(TodoStatus.waiting);
+                        }
+                      },
+                      {
+                        'Сбросить фильтры': () {
+                          _ref
+                              .read(todoNotifierProvider.notifier)
+                              .filterReset();
+                        }
+                      },
+                    ],
+                    onSearched: (value) {
+                      _ref.read(todoNotifierProvider.notifier).search(value);
+                    },
+                    onLogout: () {
+                      _ref.read(authNotifierProvider.notifier).logout();
+                    },
+                  ),
+                ),
           !kTryRiverpod
               ? BlocBuilder<TodoBloc, TodoState>(
                   bloc: _todoBloc,
@@ -86,10 +158,49 @@ class _TodoListPageState extends State<TodoListPage> {
               : Consumer(
                   builder: (context, ref, child) {
                     _ref = ref;
-                    return SliverList(
-                      delegate: SliverChildListDelegate([
-                        const Center(child: CircularProgressIndicator()),
-                      ]),
+
+                    return _ref.watch(todoNotifierProvider).maybeMap(
+                      success: (value) {
+                        return SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              return _todoTile(value.todoList[index]);
+                            },
+                            childCount: value.todoList.length,
+                          ),
+                        );
+                      },
+                      orElse: () {
+                        return SliverPadding(
+                          padding: const EdgeInsets.all(8.0),
+                          sliver: SliverList(
+                            delegate: SliverChildListDelegate(
+                              [
+                                const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      emptyList: (value) {
+                        return SliverPadding(
+                          padding: const EdgeInsets.all(8),
+                          sliver: SliverList(
+                            delegate: SliverChildListDelegate(
+                              const [
+                                Center(
+                                  child: Text(
+                                    'Список задач пуст',
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -107,7 +218,11 @@ class _TodoListPageState extends State<TodoListPage> {
         children: [
           SlidableAction(
             onPressed: (context) {
-              _todoBloc.add(TodoRemove(todo.id));
+              !kTryRiverpod
+                  ? _todoBloc.add(TodoRemove(todo.id))
+                  : _ref
+                      .read(todoNotifierProvider.notifier)
+                      .removeTodo(todo.id);
             },
             backgroundColor: const Color(0xFFFE4A49),
             foregroundColor: Colors.white,
