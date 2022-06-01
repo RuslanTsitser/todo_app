@@ -54,29 +54,20 @@ class TodoRemove extends TodoEvent {
   List<Object?> get props => [id];
 }
 
-class TodoFilter extends TodoEvent {
-  final TodoStatus status;
-  TodoFilter(this.status);
-  @override
-  List<Object?> get props => [status];
-}
-
-class TodoFilterReset extends TodoEvent {
-  @override
-  List<Object?> get props => [];
-}
-
-class TodoSearch extends TodoEvent {
-  final String value;
-  TodoSearch(this.value);
-  @override
-  List<Object?> get props => [value];
-}
-
 class TodoChangeTitle extends TodoEvent {
   final String id;
   final String value;
   TodoChangeTitle(this.id, this.value);
   @override
   List<Object?> get props => [id, value];
+}
+
+class TodoFilterOrSearch extends TodoEvent {
+  final TodoStatus? status;
+  final String? value;
+
+  TodoFilterOrSearch({this.status, this.value});
+
+  @override
+  List<Object?> get props => [status, value];
 }

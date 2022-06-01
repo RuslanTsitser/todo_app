@@ -1,10 +1,11 @@
-import 'package:riverpod/riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:todo_app/data/api/api_util.dart';
 import 'package:todo_app/data/api/service/api_service.dart';
 import 'package:todo_app/data/repository/auth_data_repository.dart';
 import 'package:todo_app/data/shared/service/shared_service.dart';
 import 'package:todo_app/data/shared/shared_util.dart';
 import 'package:todo_app/domain/repository/auth_repository.dart';
+import 'package:todo_app/domain/state/todo/riverpod/todo_filter_notifier.dart';
 import 'package:todo_app/presentation/routes/auto_route.gr.dart';
 
 import '../../domain/state/auth/riverpod/auth_notifier.dart';
@@ -48,8 +49,15 @@ final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>(
   (ref) => AuthNotifier(ref.watch(_repositoryProvider)),
 );
 
+final _todoFilterNotifierProvider = Provider<TodoFilterNotifier>(
+  (ref) => TodoFilterNotifier(),
+);
+
 final todoNotifierProvider = StateNotifierProvider<TodoNotifier, TodoState>(
-  (ref) => TodoNotifier(ref.watch(_repositoryProvider)),
+  (ref) => TodoNotifier(
+    ref.watch(_repositoryProvider),
+    ref.watch(_todoFilterNotifierProvider),
+  ),
 );
 
 final usersNotifierProvider = StateNotifierProvider<UsersNotifier, UsersState>(

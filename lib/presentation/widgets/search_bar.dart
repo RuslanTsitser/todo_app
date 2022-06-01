@@ -50,6 +50,7 @@ class _SearchBarState extends State<SearchBar> {
                 icon: const Icon(Icons.cancel),
                 onPressed: () {
                   _controller.clear();
+                  widget.onSearched('');
                   setState(() {
                     _searchStarted = !_searchStarted;
                   });
@@ -99,36 +100,6 @@ class _SearchBarState extends State<SearchBar> {
                 ),
               )
               .toList(),
-          // [
-          //   TextButton(
-          //     onPressed: () {
-          //       _todoBloc.add(TodoFilter(TodoStatus.completed));
-          //       Navigator.pop(context);
-          //     },
-          //     child: const Text('Только выполненные'),
-          //   ),
-          //   TextButton(
-          //     onPressed: () {
-          //       _todoBloc.add(TodoFilter(TodoStatus.inProgress));
-          //       Navigator.pop(context);
-          //     },
-          //     child: const Text('Только в работе'),
-          //   ),
-          //   TextButton(
-          //     onPressed: () {
-          //       _todoBloc.add(TodoFilter(TodoStatus.waiting));
-          //       Navigator.pop(context);
-          //     },
-          //     child: const Text('Только в ожидании'),
-          //   ),
-          //   TextButton(
-          //     onPressed: () {
-          //       _todoBloc.add(TodoFilterReset());
-          //       Navigator.pop(context);
-          //     },
-          //     child: const Text('Сбросить фильтры'),
-          //   ),
-          // ],
         );
       },
     );

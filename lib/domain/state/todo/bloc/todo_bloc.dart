@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/domain/state/todo/riverpod/todo_filter_notifier.dart';
 
 import '../../../../internal/repository_module.dart';
 import '../../../model/export_model.dart';
@@ -10,8 +11,10 @@ part 'todo_state.dart';
 
 class TodoBloc extends Bloc<TodoEvent, TodoState> {
   late AuthRepository _authRepository;
+  late TodoFilterNotifier _todoFilterNotifier;
   TodoBloc() : super(TodoInitial()) {
     _authRepository = RepositoryModule.authRepository();
+    _todoFilterNotifier = TodoFilterNotifier();
 
     on<TodoGetList>(
       (event, emit) async {
@@ -99,53 +102,6 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
       },
     );
 
-    on<TodoFilter>((event, emit) async {
-      try {
-        final todoList = await _authRepository.getTodoList();
-        final filteredList = todoList.where(
-          (element) {
-            if (element.status == event.status) {
-              return true;
-            } else {
-              return false;
-            }
-          },
-        ).toList();
-        emit(TodoSuccess(filteredList));
-      } catch (e) {
-        emit(TodoFailure(e.toString()));
-      }
-    });
-
-    on<TodoFilterReset>((event, emit) async {
-      try {
-        final todoList = await _authRepository.getTodoList();
-
-        emit(TodoSuccess(todoList));
-      } catch (e) {
-        emit(TodoFailure(e.toString()));
-      }
-    });
-
-    on<TodoSearch>(
-      (event, emit) async {
-        try {
-          final todoList = await _authRepository.getTodoList();
-          final filteredList = todoList.where(
-            (element) {
-              if (element.title.contains(event.value)) {
-                return true;
-              } else {
-                return false;
-              }
-            },
-          ).toList();
-          emit(TodoSuccess(filteredList));
-        } catch (e) {
-          emit(TodoFailure(e.toString()));
-        }
-      },
-    );
     on<TodoChangeTitle>(
       (event, emit) async {
         try {
@@ -154,6 +110,43 @@ class TodoBloc extends Bloc<TodoEvent, TodoState> {
             newTitle: event.value,
           );
           emit(TodoSuccess(todoList));
+        } catch (e) {
+          emit(TodoFailure(e.toString()));
+        }
+      },
+    );
+
+    on<TodoFilterOrSearch>(
+      (event, emit) async {
+        try {
+          final todoList = await _authRepository.getTodoList();
+
+          if (event.status == null && event.value == null) {
+            _todoFilterNotifier.clearFilter();
+          }
+          if (event.status != null) {
+            _todoFilterNotifier.changeStatusFilter(event.status!);
+          }
+          if (event.value != null) {
+            _todoFilterNotifier.changeSearchFilter(event.value!);
+          }
+
+          final _status = _todoFilterNotifier.statusFilter;
+          final _searchValue = _todoFilterNotifier.searchFilter;
+
+          final filteredList = todoList.where(
+            (element) {
+              if ((_status != null ? element.status == _status : true) &&
+                  (_searchValue != null
+                      ? element.title.contains(_searchValue)
+                      : true)) {
+                return true;
+              } else {
+                return false;
+              }
+            },
+          ).toList();
+          emit(TodoSuccess(filteredList));
         } catch (e) {
           emit(TodoFailure(e.toString()));
         }
