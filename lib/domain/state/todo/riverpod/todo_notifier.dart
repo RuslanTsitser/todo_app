@@ -1,12 +1,17 @@
 import 'package:riverpod/riverpod.dart';
 import 'package:todo_app/domain/repository/auth_repository.dart';
+import 'package:todo_app/domain/state/todo/riverpod/todo_filter_notifier.dart';
 
 import '../../../model/export_model.dart';
 import 'todo_state.dart';
 
 class TodoNotifier extends StateNotifier<TodoState> {
   final AuthRepository _authRepository;
-  TodoNotifier(this._authRepository) : super(const TodoState.initial());
+  final TodoFilterNotifier _todoFilterNotifier;
+  TodoNotifier(
+    this._authRepository,
+    this._todoFilterNotifier,
+  ) : super(const TodoState.initial());
 
   void getList() async {
     try {
@@ -82,40 +87,29 @@ class TodoNotifier extends StateNotifier<TodoState> {
     }
   }
 
-  void filter(TodoStatus status) async {
+  void filterOrSearch({TodoStatus? status, String? value}) async {
     try {
       final todoList = await _authRepository.getTodoList();
+
+      if (status == null && value == null) {
+        _todoFilterNotifier.clearFilter();
+      }
+      if (status != null) {
+        _todoFilterNotifier.changeStatusFilter(status);
+      }
+      if (value != null) {
+        _todoFilterNotifier.changeSearchFilter(value);
+      }
+
+      final _status = _todoFilterNotifier.statusFilter;
+      final _searchValue = _todoFilterNotifier.searchFilter;
+
       final filteredList = todoList.where(
         (element) {
-          if (element.status == status) {
-            return true;
-          } else {
-            return false;
-          }
-        },
-      ).toList();
-      state = TodoState.success(filteredList);
-    } catch (e) {
-      state = TodoState.failure(e.toString());
-    }
-  }
-
-  void filterReset() async {
-    try {
-      final todoList = await _authRepository.getTodoList();
-
-      state = TodoState.success(todoList);
-    } catch (e) {
-      state = TodoState.failure(e.toString());
-    }
-  }
-
-  void search(String value) async {
-    try {
-      final todoList = await _authRepository.getTodoList();
-      final filteredList = todoList.where(
-        (element) {
-          if (element.title.contains(value)) {
+          if ((_status != null ? element.status == _status : true) &&
+              (_searchValue != null
+                  ? element.title.contains(_searchValue)
+                  : true)) {
             return true;
           } else {
             return false;
