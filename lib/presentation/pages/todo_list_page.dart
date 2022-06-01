@@ -51,22 +51,25 @@ class _TodoListPageState extends State<TodoListPage> {
                   filterCallBacks: [
                     {
                       'Только выполненные': () {
-                        _todoBloc.add(TodoFilter(TodoStatus.completed));
+                        _todoBloc.add(
+                            TodoFilterOrSearch(status: TodoStatus.completed));
                       }
                     },
                     {
                       'Только в работе': () {
-                        _todoBloc.add(TodoFilter(TodoStatus.inProgress));
+                        _todoBloc.add(
+                            TodoFilterOrSearch(status: TodoStatus.inProgress));
                       }
                     },
                     {
                       'Только в ожидании': () {
-                        _todoBloc.add(TodoFilter(TodoStatus.waiting));
+                        _todoBloc.add(
+                            TodoFilterOrSearch(status: TodoStatus.waiting));
                       }
                     },
                     {
                       'Сбросить фильтры': () {
-                        _todoBloc.add(TodoFilterReset());
+                        _todoBloc.add(TodoFilterOrSearch());
                       }
                     },
                   ],
@@ -74,7 +77,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     _authBloc.add(Logout());
                   },
                   onSearched: (value) {
-                    _todoBloc.add(TodoSearch(value));
+                    _todoBloc.add(TodoFilterOrSearch(value: value));
                   },
                 )
               : Consumer(
@@ -83,34 +86,38 @@ class _TodoListPageState extends State<TodoListPage> {
                       {
                         'Только выполненные': () {
                           _ref
-                              .read(todoNotifierProvider.notifier)
-                              .filter(TodoStatus.completed);
+                              .watch(todoNotifierProvider.notifier)
+                              .filterOrSearch(
+                                status: TodoStatus.completed,
+                              );
                         }
                       },
                       {
                         'Только в работе': () {
                           _ref
-                              .read(todoNotifierProvider.notifier)
-                              .filter(TodoStatus.inProgress);
+                              .watch(todoNotifierProvider.notifier)
+                              .filterOrSearch(status: TodoStatus.inProgress);
                         }
                       },
                       {
                         'Только в ожидании': () {
                           _ref
-                              .read(todoNotifierProvider.notifier)
-                              .filter(TodoStatus.waiting);
+                              .watch(todoNotifierProvider.notifier)
+                              .filterOrSearch(status: TodoStatus.waiting);
                         }
                       },
                       {
                         'Сбросить фильтры': () {
                           _ref
-                              .read(todoNotifierProvider.notifier)
-                              .filterReset();
+                              .watch(todoNotifierProvider.notifier)
+                              .filterOrSearch();
                         }
                       },
                     ],
                     onSearched: (value) {
-                      _ref.read(todoNotifierProvider.notifier).search(value);
+                      _ref
+                          .watch(todoNotifierProvider.notifier)
+                          .filterOrSearch(value: value);
                     },
                     onLogout: () {
                       _ref.read(authNotifierProvider.notifier).logout();

@@ -6,7 +6,7 @@ import 'domain/state/todo/bloc/todo_bloc.dart';
 import 'domain/state/users/bloc/users_bloc.dart';
 import 'internal/application.dart';
 
-bool kTryRiverpod = true;
+bool kTryRiverpod = false;
 
 void main() {
   runApp(kTryRiverpod
