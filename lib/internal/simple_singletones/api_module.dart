@@ -1,5 +1,5 @@
-import '../data/api/api_util.dart';
-import '../data/api/service/api_service.dart';
+import '../../data/api/api_util.dart';
+import '../../data/api/service/api_service.dart';
 
 class ApiModule {
   static ApiUtil? _apiUtil;

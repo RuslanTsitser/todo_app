@@ -1,6 +1,6 @@
 import 'package:todo_app/data/shared/service/shared_service.dart';
 
-import '../data/shared/shared_util.dart';
+import '../../data/shared/shared_util.dart';
 
 class SharedModule {
   static SharedUtil? _sharedUtil;

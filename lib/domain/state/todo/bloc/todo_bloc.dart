@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/domain/state/todo/riverpod/todo_filter_notifier.dart';
 
-import '../../../../internal/repository_module.dart';
+import '../../../../internal/simple_singletones/repository_module.dart';
 import '../../../model/export_model.dart';
 import '../../../repository/auth_repository.dart';
 

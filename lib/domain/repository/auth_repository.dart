@@ -1,5 +1,8 @@
+import 'package:injectable/injectable.dart';
+
 import '../model/export_model.dart';
 
+@injectable
 abstract class AuthRepository {
   // Залогиниться с логином и паролем
   Future<bool> login(String username, String password);
